@@ -1,0 +1,24 @@
+{
+  "name": "deutsch — German learning tracker",
+  "short_name": "deutsch",
+  "description": "Track daily German habits, check your writing, and get speaking prompts on the way from B1 to B2.",
+  "start_url": "/deutsch/",
+  "scope": "/deutsch/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
