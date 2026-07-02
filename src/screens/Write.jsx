@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { askClaude, extractJSON } from '../lib/claude.js'
 import { diffWords } from '../lib/diff.js'
+import { Card, CardLabel, PillButton, ErrorNote } from '../components/ui.jsx'
 
 const SYSTEM = `You are a German teacher checking a B1-B2 learner's writing.
 Respond with ONLY a JSON object, no other text:
@@ -33,39 +34,44 @@ export default function Write() {
     }
   }
 
+  const perfect = result && !result.tokens.some((t) => t.changed)
+
   return (
     <div className="space-y-4">
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Schreib ein paar Sätze auf Deutsch…"
-        rows={6}
-        className="w-full resize-y rounded-2xl border border-slate-700 bg-slate-800 p-4 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
-      />
-      <button
-        onClick={check}
-        disabled={loading || !text.trim()}
-        className="w-full rounded-2xl bg-emerald-600 py-3 font-semibold transition-colors hover:bg-emerald-500 disabled:opacity-40"
-      >
-        {loading ? 'Checking…' : 'Check my German'}
-      </button>
+      <div className="rise">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Schreib ein paar Sätze auf Deutsch…"
+          rows={6}
+          className="w-full resize-y rounded-3xl border border-sand bg-white p-5 font-display text-lg leading-relaxed shadow-[0_1px_3px_rgb(0_0_0_/_0.04)] placeholder:font-sans placeholder:text-base placeholder:text-fog/70 focus:border-clay focus:outline-none focus:ring-4 focus:ring-clay/10"
+        />
+      </div>
 
-      {error && (
-        <div className="rounded-2xl border border-red-800 bg-red-950/50 p-4 text-sm text-red-300">
-          {error}
-        </div>
-      )}
+      <div className="rise" style={{ animationDelay: '60ms' }}>
+        <PillButton onClick={check} disabled={loading || !text.trim()} loading={loading}>
+          {loading ? 'Checking…' : 'Check my German'}
+        </PillButton>
+      </div>
+
+      {error && <ErrorNote>{error}</ErrorNote>}
 
       {result && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
-              Corrected
-            </h2>
-            <p className="leading-relaxed">
+          <Card>
+            <div className="flex items-baseline justify-between">
+              <CardLabel>Corrected</CardLabel>
+              {perfect && (
+                <span className="pop text-xs font-semibold text-moss">Perfekt — no changes ✓</span>
+              )}
+            </div>
+            <p className="font-display text-lg leading-relaxed">
               {result.tokens.map((t, i) =>
                 t.changed ? (
-                  <span key={i} className="rounded bg-emerald-900 px-0.5 font-medium text-emerald-300">
+                  <span
+                    key={i}
+                    className="rounded-md bg-moss-soft px-1 font-medium text-moss-deep"
+                  >
                     {t.text}
                   </span>
                 ) : (
@@ -73,33 +79,40 @@ export default function Write() {
                 ),
               )}
             </p>
-          </div>
+          </Card>
 
           {result.explanations?.length > 0 && (
-            <div className="rounded-2xl bg-slate-800 p-5">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
-                Corrections
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-slate-300">
+            <Card delay={60}>
+              <CardLabel>Why</CardLabel>
+              <ul className="space-y-3 text-[15px] leading-relaxed text-ink/80">
                 {result.explanations.map((e, i) => (
-                  <li key={i}>{e}</li>
+                  <li key={i} className="flex gap-3">
+                    <span className="mt-[3px] shrink-0 select-none font-display text-clay">
+                      {i + 1}.
+                    </span>
+                    {e}
+                  </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           )}
 
           {result.ankiWord && (
-            <div className="rounded-2xl bg-slate-800 p-5">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
-                Add to Anki
-              </h2>
-              <p>
-                <span className="font-semibold text-emerald-300">{result.ankiWord.german}</span>
-                <span className="text-slate-400"> — {result.ankiWord.english}</span>
+            <Card delay={120} className="border-clay/25 bg-clay-soft/60">
+              <CardLabel>Add to Anki</CardLabel>
+              <p className="font-display text-xl">
+                {result.ankiWord.german}
+                <span className="ml-3 font-sans text-sm text-fog">{result.ankiWord.english}</span>
               </p>
-            </div>
+            </Card>
           )}
         </div>
+      )}
+
+      {!result && !loading && !error && (
+        <p className="rise px-8 pt-10 text-center text-sm leading-relaxed text-fog" style={{ animationDelay: '120ms' }}>
+          Write a few German sentences and get them back corrected, with every change explained.
+        </p>
       )}
     </div>
   )

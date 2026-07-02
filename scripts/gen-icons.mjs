@@ -52,7 +52,7 @@ function png(size, pixelAt) {
 const BLACK = [30, 30, 30]
 const RED = [221, 0, 0]
 const GOLD = [255, 206, 0]
-const BG = [15, 23, 42] // slate-900, matches theme
+const BG = [250, 249, 245] // paper, matches theme
 
 function flagIcon(size) {
   const pad = Math.round(size * 0.12)

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { askClaude, extractJSON } from '../lib/claude.js'
+import { Card, CardLabel, PillButton, ErrorNote } from '../components/ui.jsx'
 
 const SYSTEM = `You create speaking-practice material for a B1-B2 German learner
 with a STEM/engineering background preparing for iTalki conversation lessons.
@@ -35,59 +36,53 @@ export default function Prompt() {
 
   return (
     <div className="space-y-4">
-      <button
-        onClick={generate}
-        disabled={loading}
-        className="w-full rounded-2xl bg-emerald-600 py-3 font-semibold transition-colors hover:bg-emerald-500 disabled:opacity-40"
-      >
-        {loading ? 'Generating…' : result ? 'New prompt' : 'Generate prompt'}
-      </button>
+      <div className="rise">
+        <PillButton onClick={generate} disabled={loading} loading={loading}>
+          {loading ? 'Generating…' : result ? 'New prompt' : 'Generate prompt'}
+        </PillButton>
+      </div>
 
-      {error && (
-        <div className="rounded-2xl border border-red-800 bg-red-950/50 p-4 text-sm text-red-300">
-          {error}
-        </div>
-      )}
+      {error && <ErrorNote>{error}</ErrorNote>}
 
       {result && (
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
-              Speaking prompt
-            </h2>
-            <p className="leading-relaxed">{result.prompt}</p>
-          </div>
+        <div className="space-y-4" key={result.prompt}>
+          <Card className="border-clay/25 bg-clay-soft/50">
+            <CardLabel>Speaking prompt</CardLabel>
+            <p className="font-display text-xl leading-relaxed">{result.prompt}</p>
+          </Card>
 
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
-              Key vocab
-            </h2>
-            <ul className="space-y-2">
+          <Card delay={60} className="!p-0 overflow-hidden">
+            <div className="px-6 pb-1 pt-6">
+              <CardLabel>Key vocab</CardLabel>
+            </div>
+            <ul className="divide-y divide-sand/60">
               {result.vocab?.map((v, i) => (
-                <li key={i} className="flex justify-between gap-4 text-sm">
-                  <span className="font-medium text-emerald-300">{v.german}</span>
-                  <span className="text-right text-slate-400">{v.english}</span>
+                <li key={i} className="flex items-baseline justify-between gap-4 px-6 py-3">
+                  <span className="font-display text-lg">{v.german}</span>
+                  <span className="text-right text-sm text-fog">{v.english}</span>
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
-              Sentence starters
-            </h2>
-            <ul className="list-disc space-y-2 pl-5 text-sm text-slate-300">
+          <Card delay={120}>
+            <CardLabel>Sentence starters</CardLabel>
+            <ul className="space-y-3">
               {result.starters?.map((s, i) => (
-                <li key={i}>{s}</li>
+                <li key={i} className="flex gap-3 text-[15px] leading-relaxed">
+                  <span className="mt-px select-none font-display text-clay">—</span>
+                  <span className="font-display text-base">{s}</span>
+                </li>
               ))}
             </ul>
-          </div>
+          </Card>
         </div>
       )}
 
       {!result && !loading && !error && (
-        <p className="pt-8 text-center text-sm text-slate-500">
-          Get a STEM-flavoured German speaking prompt for your next iTalki lesson.
+        <p className="rise px-8 pt-10 text-center text-sm leading-relaxed text-fog" style={{ animationDelay: '120ms' }}>
+          Get a STEM-flavoured German speaking prompt for your next iTalki lesson, with vocab and
+          sentence starters to lean on.
         </p>
       )}
     </div>

@@ -1,4 +1,4 @@
-const CACHE = 'deutsch-v1'
+const CACHE = 'deutsch-v2'
 const BASE = '/deutsch/'
 const APP_SHELL = [BASE, BASE + 'index.html', BASE + 'manifest.json']
 
